@@ -3,19 +3,7 @@ require "csv"
 puts "Event manager initialized!"
 
 def clean_zipcode(zip)
-  zip ||=""
-  
-  result = zip.split('')
-  
-  while result.count != 5 do
-    if(result.count < 5)
-      result.insert(0, '0')
-    elsif(result.count > 5)
-      result = result[0..4]
-    end
-  end
-  result.join('')
-
+  zip.to_s.rjust(5, '0')[0..4]
 end
 FILE_TO_READ = "event_attendees.csv"
 if(File.exist? (FILE_TO_READ))
