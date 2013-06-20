@@ -8,6 +8,12 @@ puts "Event manager initialized!"
 def clean_zipcode(zip)
   zip.to_s.rjust(5, '0')[0..4]
 end
+
+def legislators_by_zip zip
+  legislators = Sunlight::Congress::Legislator.by_zipcode(zip)
+  legislators.map{|l| "#{l.first_name} #{l.last_name}"}
+end
+
 FILE_TO_READ = "event_attendees.csv"
 if(File.exist? (FILE_TO_READ))
   
@@ -17,13 +23,9 @@ if(File.exist? (FILE_TO_READ))
     name = row[:first_name]
     zip = clean_zipcode(row[:zipcode])
     
-    legislators = Sunlight::Congress::Legislator.by_zipcode(zip)
-    legs = []
-    legislators.each do |l|
-      legs << "#{l.first_name} #{l.last_name}"
-    end
+    legs = legislators_by_zip(zip)
     
-    puts "name:#{name} | zip:#{zip} | #{legs}"
+    puts "name:#{name} | zip:#{zip} | #{legs.join(', ')}"
   end
   
 end
