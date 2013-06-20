@@ -1,4 +1,7 @@
 require "csv"
+require 'sunlight/congress'
+
+Sunlight::Congress.api_key = "e179a6973728c4dd3fb1204283aaccb5"
 
 puts "Event manager initialized!"
 
@@ -13,7 +16,14 @@ if(File.exist? (FILE_TO_READ))
   rows.each do |row|
     name = row[:first_name]
     zip = clean_zipcode(row[:zipcode])
-    puts "name:#{name} | zip:#{zip}"
+    
+    legislators = Sunlight::Congress::Legislator.by_zipcode(zip)
+    legs = []
+    legislators.each do |l|
+      legs << "#{l.first_name} #{l.last_name}"
+    end
+    
+    puts "name:#{name} | zip:#{zip} | #{legs}"
   end
   
 end
