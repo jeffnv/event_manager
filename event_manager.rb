@@ -1,8 +1,10 @@
 require "csv"
 require 'sunlight/congress'
+require 'erb'
 
 Sunlight::Congress.api_key = "e179a6973728c4dd3fb1204283aaccb5"
-
+EVENT_ATTENDEES = "event_attendees.csv"
+FORM_LETTER = "form_letter.html"
 puts "Event manager initialized!"
 
 def clean_zipcode(zip)
@@ -14,18 +16,28 @@ def legislators_by_zip zip
   legislators.map{|l| "#{l.first_name} #{l.last_name}"}
 end
 
-FILE_TO_READ = "event_attendees.csv"
-if(File.exist? (FILE_TO_READ))
+def load_form_letter
+  letter = File.read(FORM_LETTER)
+end
+
+letter_template = load_form_letter
+
+if(File.exist? (EVENT_ATTENDEES))
   
-  rows = (CSV.open FILE_TO_READ, headers: true, header_converters: :symbol)
+  rows = (CSV.open EVENT_ATTENDEES, headers: true, header_converters: :symbol)
   
   rows.each do |row|
-    name = row[:first_name]
+    template = ERB.new letter_template
+
+    FIRST_NAME = row[:first_name]
     zip = clean_zipcode(row[:zipcode])
+    LEGISLATORS = legislators_by_zip(zip).join((', '))
+    letter = template.result(binding)
+    puts letter
+    # puts "name:#{name} | zip:#{zip} | #{legs.join(', ')}"
     
-    legs = legislators_by_zip(zip)
     
-    puts "name:#{name} | zip:#{zip} | #{legs.join(', ')}"
   end
   
 end
+
