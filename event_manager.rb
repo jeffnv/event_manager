@@ -7,6 +7,21 @@ EVENT_ATTENDEES = "event_attendees.csv"
 FORM_LETTER = "form_letter.erb"
 puts "Event manager initialized!"
 
+
+def clean_phone(phone)
+  num = phone.scan(/\d+/).join('')
+  result = ""
+  
+  case num.length
+  when 11
+    result  = num if num.start_with?('1')
+  when 10
+    result = num.insert(0, '1')
+  end
+  # puts result
+  result
+end
+
 def clean_zipcode(zip)
   zip.to_s.rjust(5, '0')[0..4]
 end
@@ -39,6 +54,7 @@ if(File.exist? (EVENT_ATTENDEES))
     template = ERB.new letter_template
     id = row[0]
     name = row[:first_name]
+    number = clean_phone(row[:homephone])
     zip = clean_zipcode(row[:zipcode])
     legislators = legislators_by_zip(zip)
     letter = template.result(binding)
