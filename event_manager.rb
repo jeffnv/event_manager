@@ -5,6 +5,7 @@ require 'date'
 
 Sunlight::Congress.api_key = "e179a6973728c4dd3fb1204283aaccb5"
 EVENT_ATTENDEES = "event_attendees.csv"
+#EVENT_ATTENDEES = "full_event_attendees.csv"
 FORM_LETTER = "form_letter.erb"
 FOLLOWUP_FILENAME = "followup.txt"
 WEEK_DAYS = %w(Sunday Monday Tuesday Wednesday Thursday Friday Saturday)
@@ -76,6 +77,7 @@ def save_followup_list(content)
   end
 end
 
+
 letter_template = load_form_letter
 names = []
 numbers = []
@@ -94,9 +96,9 @@ if(File.exist? (EVENT_ATTENDEES))
     dt = parse_date_time(row[:regdate])
     times << dt.hour
     wdays << dt.wday
-    # legislators = legislators_by_zip(zip)
-    # letter = template.result(binding)
-    # save_form_letter(letter, id)
+    legislators = legislators_by_zip(zip)
+    letter = template.result(binding)
+    save_form_letter(letter, id)
    
   end
   
@@ -104,6 +106,8 @@ if(File.exist? (EVENT_ATTENDEES))
   names.each_with_index do |name, index|
     follow_up_content << "\t#{name} #{numbers[index]}\n"
   end
+  
+  #i thought that maybe 'the boss' might like it if I created an easy to use document that listed the first names and phone numbers of the attendees and the best two recommended times and dates at the bottom.
   
   sorted_times = sort_items(times)
   sorted_days = sort_items(wdays)
